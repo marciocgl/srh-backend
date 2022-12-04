@@ -1,6 +1,7 @@
 package com.srh.api.service;
 
 import com.srh.api.model.*;
+import com.srh.api.repository.ProjectRepository;
 import com.srh.api.repository.RecommendationRatingRepository;
 import com.srh.api.repository.RecommendationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,15 @@ import java.util.ArrayList;
 public class RindvService {
 
     @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
     private RecommendationRepository recommendationRepository;
 
     @Autowired
     private RecommendationRatingRepository recommendationRatingRepository;
 
-    public ArrayList<Double> getRindv(Integer id) {
+    public Double getRindv(Integer ProjectId, Integer AlgorithmId) {
 
         ArrayList<Double> totaisMatrizes = new ArrayList<>();
         Double mediaLi;
@@ -31,12 +35,10 @@ public class RindvService {
         double auxMediaLi = 0;
         int xComparacao = 0;
         int qtdScores = 0;
-        int a = 1;
 
         Iterable<Recommendation> lista1 = recommendationRepository.findAll();
         Iterable<RecommendationRating> lista2 = recommendationRatingRepository.findAll();
 
-        //Criação da sublista do algoritimo 4 com menores notas
         ArrayList<Double> listaAlgoritmo4 = new ArrayList<>();
         for (Recommendation r : lista1) {
             for (Recommendation r2 : lista1) {
@@ -52,79 +54,69 @@ public class RindvService {
                 }
             }
         }
-        //Percorrendo todos algoritmos existentes
-        while (a <= 5) {
 
-            if (a == 4) {
-                // Tratando a comparação do algoritmo 4
-                for (int x = 0; x < listaAlgoritmo4.size(); x++) {
-                    for (RecommendationRating irr : lista2) {
-                        if (irr.getId() == x + 1 &&
-                                xComparacao < 2 &&
-                                qtdScores < listaAlgoritmo4.size()) {
-                            totalItem = totalItem + (listaAlgoritmo4.get(x) + irr.getScore());
-                            auxli = auxli + Math.pow(listaAlgoritmo4.get(x) - irr.getScore(), 2);
-                            xComparacao++;
-                            qtdScores++;
-                        }
-                    }
-                    if (xComparacao >= 2) {
-                        auxli = auxli / xComparacao;
-                        liUser.add(auxli);
-                        auxli = 0;
-                        totaisMatrizes.add(totalItem);
-                        totalItem = 0;
-                        xComparacao = 0;
+        if (AlgorithmId == 4) {
+            for (int x = 0; x < listaAlgoritmo4.size(); x++) {
+                for (RecommendationRating irr : lista2) {
+                    if (irr.getId() == x + 1 &&
+                            xComparacao < 2 &&
+                            qtdScores < listaAlgoritmo4.size()) {
+                        totalItem = totalItem + (listaAlgoritmo4.get(x) + irr.getScore());
+                        auxli = auxli + Math.pow(listaAlgoritmo4.get(x) - irr.getScore(), 2);
+                        xComparacao++;
+                        qtdScores++;
                     }
                 }
-
-            } else {
-
-                for (Recommendation r : lista1) {
-                    for (RecommendationRating irr : lista2) {
-                        if (r.getEvaluator().getId() == irr.getEvaluator().getId() &&
-                                irr.getRecommendation().getId() == r.getId() &&
-                                r.getAlgorithm().getId() == a) {
-                            totalItem = totalItem + (r.getWeight() + irr.getScore());
-                            auxli = auxli + Math.pow(r.getWeight() - irr.getScore(), 2);
-                            xComparacao++;
-                        }
-                    }
-                    if (xComparacao >= 2) {
-                        auxli = auxli / xComparacao;
-                        liUser.add(auxli);
-                        auxli = 0;
-                        totaisMatrizes.add(totalItem);
-                        totalItem = 0;
-                        xComparacao = 0;
-                    }
+                if (xComparacao >= 2) {
+                    auxli = auxli / xComparacao;
+                    liUser.add(auxli);
+                    auxli = 0;
+                    totaisMatrizes.add(totalItem);
+                    totalItem = 0;
+                    xComparacao = 0;
                 }
             }
-
-            // Encontrando a média dos lis
-            for (int i = 0; i < liUser.size(); i++) {
-                auxMediaLi = auxMediaLi + liUser.get(i);
+        } else {
+            for (Recommendation r : lista1) {
+                for (RecommendationRating irr : lista2) {
+                    if (r.getEvaluator().getId() == irr.getEvaluator().getId() &&
+                            irr.getRecommendation().getId() == r.getId() &&
+                            r.getAlgorithm().getId() == AlgorithmId) {
+                        totalItem = totalItem + (r.getWeight() + irr.getScore());
+                        auxli = auxli + Math.pow(r.getWeight() - irr.getScore(), 2);
+                        xComparacao++;
+                    }
+                }
+                if (xComparacao >= 2) {
+                    auxli = auxli / xComparacao;
+                    liUser.add(auxli);
+                    auxli = 0;
+                    totaisMatrizes.add(totalItem);
+                    totalItem = 0;
+                    xComparacao = 0;
+                }
             }
-            mediaLi = auxMediaLi / liUser.size();
-
-            //ENCONTRANDO O RINDV DO ALGORITIMO
-            for (Double lis : liUser) {
-                auxRindv = auxRindv + (Math.pow(lis - mediaLi, 2));
-            }
-            auxRindv = auxRindv / liUser.size();
-
-            rindv.add(auxRindv);
-
-            //Resetando valores para o próximo algoritmo
-            mediaLi = 0.0;
-            totalItem = 0.0;
-            auxMediaLi = 0.0;
-            auxRindv = 0;
-            liUser.clear();
-            auxli = 0;
-            qtdScores = 0;
-            a++;
         }
-        return rindv;
+
+        for (int i = 0; i < liUser.size(); i++) {
+            auxMediaLi = auxMediaLi + liUser.get(i);
+        }
+        mediaLi = auxMediaLi / liUser.size();
+
+        for (Double lis : liUser) {
+            auxRindv = auxRindv + (Math.pow(lis - mediaLi, 2));
+        }
+        auxRindv = auxRindv / liUser.size();
+
+        rindv.add(auxRindv);
+
+        mediaLi = 0.0;
+        totalItem = 0.0;
+        auxMediaLi = 0.0;
+        liUser.clear();
+        auxli = 0;
+        qtdScores = 0;
+
+        return auxRindv;
     }
 }

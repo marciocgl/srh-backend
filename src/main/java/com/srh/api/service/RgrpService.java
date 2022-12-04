@@ -3,6 +3,7 @@ package com.srh.api.service;
 
 import com.srh.api.model.Recommendation;
 import com.srh.api.model.RecommendationRating;
+import com.srh.api.repository.ProjectRepository;
 import com.srh.api.repository.RecommendationRatingRepository;
 import com.srh.api.repository.RecommendationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,18 @@ import java.util.ArrayList;
 public class RgrpService {
 
     @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
     private RecommendationRepository recommendationRepository;
 
     @Autowired
     private RecommendationRatingRepository recommendationRatingRepository;
 
-    public ArrayList<Double> getRgrp(Integer id, ArrayList<Double> grupo1, ArrayList<Double> grupo2) {
+    public Double getRgrp(Integer ProjectId, Integer AlgorithmId) {
 
+        ArrayList<Double> grupo1;
+        ArrayList<Double> grupo2;
         grupo1 = new ArrayList<>();
         grupo2 = new ArrayList<>();
 
@@ -36,13 +42,11 @@ public class RgrpService {
         double totalItem = 0;
         int xComparacao = 0;
         int grp = 0;
-        int a = 1;
         int qtdScores = 0;
 
         Iterable<Recommendation> lista1 = recommendationRepository.findAll();
         Iterable<RecommendationRating> lista2 = recommendationRatingRepository.findAll();
 
-        //Criação da sublista do algoritimo 4 com menores notas
         ArrayList<Double> listaAlgoritmo4 = new ArrayList<>();
         for (Recommendation r : lista1) {
             for (Recommendation r2 : lista1) {
@@ -59,119 +63,104 @@ public class RgrpService {
             }
         }
 
-        //Percorrendo todos algoritmos existentes
-        while (a <= 5) {
-
-            if (a == 4) {
-                // Tratando a comparação do algoritmo 4
-                for (int x = 0; x < listaAlgoritmo4.size(); x++) {
-                    for (RecommendationRating irr : lista2) {
-                        if (irr.getId() == x + 1 &&
-                                xComparacao < 2 &&
-                                qtdScores < listaAlgoritmo4.size()) {
-                            totalItem = totalItem + (listaAlgoritmo4.get(x) + irr.getScore());
-                            auxli = auxli + Math.pow(listaAlgoritmo4.get(x) - irr.getScore(), 2);
-                            xComparacao++;
-                            qtdScores++;
-                        }
+        if (AlgorithmId == 4) {
+            for (int x = 0; x < listaAlgoritmo4.size(); x++) {
+                for (RecommendationRating irr : lista2) {
+                    if (irr.getId() == x + 1 &&
+                            xComparacao < 2 &&
+                            qtdScores < listaAlgoritmo4.size()) {
+                        totalItem = totalItem + (listaAlgoritmo4.get(x) + irr.getScore());
+                        auxli = auxli + Math.pow(listaAlgoritmo4.get(x) - irr.getScore(), 2);
+                        xComparacao++;
+                        qtdScores++;
                     }
-                    if (xComparacao >= 2) {
-                        auxli = auxli / xComparacao;
+                }
+                if (xComparacao >= 2) {
+                    auxli = auxli / xComparacao;
+                    liUser.add(auxli);
+                    auxli = 0;
+                    totalItem = 0;
+                    xComparacao = 0;
+                    qtdScores = 0;
+                }
+            }
+
+            for (int x = 0; x < liUser.size(); x++) {
+                if (x % 2 == 1) {
+                    grupo1.add(liUser.get(x));
+                } else {
+                    grupo2.add(liUser.get(x));
+                }
+            }
+        } else {
+            for (Recommendation r : lista1) {
+                for (RecommendationRating irr : lista2) {
+                    if (r.getEvaluator().getId() == irr.getEvaluator().getId() &&
+                            irr.getRecommendation().getId() == r.getId() &&
+                            r.getAlgorithm().getId() == AlgorithmId) {
+                        totalItem = totalItem + (r.getWeight() + irr.getScore());
+                        auxli = auxli + Math.pow(r.getWeight() - irr.getScore(), 2);
+                        xComparacao++;
+                    }
+                }
+                if (xComparacao >= 2) {
+                    auxli = auxli / xComparacao;
+                    grp = r.getEvaluator().getId();
+                    if (grp % 2 == 0) {
+                        grupo2.add(auxli);
                         liUser.add(auxli);
                         auxli = 0;
                         totalItem = 0;
                         xComparacao = 0;
-                        qtdScores = 0;
+                        grp = 0;
                     }
-                }
-
-                // Dividindo os li's do algoritmo 4 em 2 grupos
-                for (int x = 0; x < liUser.size(); x++) {
-                    if (x % 2 == 1) {
-                        grupo1.add(liUser.get(x));
-                    } else {
-                        grupo2.add(liUser.get(x));
-                    }
-                }
-
-            } else {
-                for (Recommendation r : lista1) {
-                    for (RecommendationRating irr : lista2) {
-                        if (r.getEvaluator().getId() == irr.getEvaluator().getId() &&
-                                irr.getRecommendation().getId() == r.getId() &&
-                                r.getAlgorithm().getId() == a) {
-                            totalItem = totalItem + (r.getWeight() + irr.getScore());
-                            auxli = auxli + Math.pow(r.getWeight() - irr.getScore(), 2);
-                            xComparacao++;
-                        }
-                    }
-                    if (xComparacao >= 2) {
-                        auxli = auxli / xComparacao;
-                        grp = r.getEvaluator().getId();
-                        // Definindo condição do grupo 2 - PARES nos demais algoritmos
-                        if (grp % 2 == 0) {
-                            grupo2.add(auxli);
-                            liUser.add(auxli);
-                            auxli = 0;
-                            totalItem = 0;
-                            xComparacao = 0;
-                            grp = 0;
-                            // Definindo condição do grupo 1 - IMPARES nos demais algoritmos
-                        }
-                        if (grp % 2 == 1) {
-                            grupo1.add(auxli);
-                            liUser.add(auxli);
-                            auxli = 0;
-                            totalItem = 0;
-                            xComparacao = 0;
-                            grp = 0;
-                        }
+                    if (grp % 2 == 1) {
+                        grupo1.add(auxli);
+                        liUser.add(auxli);
+                        auxli = 0;
+                        totalItem = 0;
+                        xComparacao = 0;
+                        grp = 0;
                     }
                 }
             }
-
-            // Encontrando o LI dos grupo 2
-            for (int i = 0; i < grupo2.size(); i++) {
-                auxLI = auxLI + grupo2.get(i).doubleValue();
-            }
-            auxLI = auxLI / grupo2.size();
-            lIUser.add(auxLI);
-
-            // Encontrando o LI dos grupo 1
-            auxLI = 0;
-            for (int i = 0; i < grupo1.size(); i++) {
-                auxLI = auxLI + grupo1.get(i).doubleValue();
-            }
-            auxLI = auxLI / grupo1.size();
-            lIUser.add(auxLI);
-
-            // Encontrando a média dos LI's
-            auxLI = 0;
-            for (int i = 0; i < lIUser.size(); i++) {
-                auxLI = auxLI + lIUser.get(i);
-            }
-            mediaLI = auxLI / lIUser.size();
-
-            //ENCONTRANDO O RGRP DO ALGORITIMO
-            for (Double lIs : lIUser) {
-                auxRgrp = auxRgrp + (Math.pow(lIs - mediaLI, 2));
-            }
-            auxRgrp = auxRgrp / lIUser.size();
-
-            rgrp.add(auxRgrp);
-
-            //Limpando valores para o próximo algoritmo
-            liUser.clear();
-            auxLI = 0.0;
-            mediaLI = 0.0;
-            lIUser.clear();
-            grupo2.clear();
-            grupo1.clear();
-            auxRgrp = 0.0;
-            qtdScores = 0;
-            a++;
         }
-        return rgrp;
+
+        for (int i = 0; i < grupo2.size(); i++) {
+            auxLI = auxLI + grupo2.get(i).doubleValue();
+        }
+        auxLI = auxLI / grupo2.size();
+        lIUser.add(auxLI);
+
+        auxLI = 0;
+        for (int i = 0; i < grupo1.size(); i++) {
+            auxLI = auxLI + grupo1.get(i).doubleValue();
+        }
+        auxLI = auxLI / grupo1.size();
+        lIUser.add(auxLI);
+
+        auxLI = 0;
+        for (int i = 0; i < lIUser.size(); i++) {
+            auxLI = auxLI + lIUser.get(i);
+        }
+        mediaLI = auxLI / lIUser.size();
+
+        for (Double lIs : lIUser) {
+            auxRgrp = auxRgrp + (Math.pow(lIs - mediaLI, 2));
+        }
+        auxRgrp = auxRgrp / lIUser.size();
+
+        rgrp.add(auxRgrp);
+
+        liUser.clear();
+        auxLI = 0.0;
+        mediaLI = 0.0;
+        lIUser.clear();
+        grupo2.clear();
+        grupo1.clear();
+        qtdScores = 0;
+
+        return auxRgrp;
     }
 }
 

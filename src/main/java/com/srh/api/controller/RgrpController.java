@@ -1,5 +1,7 @@
 package com.srh.api.controller;
 
+import com.srh.api.model.Project;
+import com.srh.api.service.ProjectService;
 import com.srh.api.service.RgrpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,16 +17,17 @@ public class RgrpController {
     @Autowired
     private RgrpService rgrpService;
 
-    @GetMapping
-    public ArrayList<Double> getRgrp(Integer id, ArrayList<Double> grupo1, ArrayList<Double> grupo2) {
-        ArrayList<Double> rgrp = rgrpService.getRgrp(id, grupo1, grupo2);
-        return rgrp;
-    }
+    @Autowired
+    private ProjectService projectService;
 
-    @GetMapping("/{id}")
-    public Double find(@PathVariable Integer id, ArrayList<Double> grupo1, ArrayList<Double> grupo2) {
-        ArrayList<Double> rgrp = rgrpService.getRgrp(id, grupo1, grupo2);
-        return rgrp.get(id-1);
+    @GetMapping("/{ProjectId}/{AlgorithmId}")
+    public Double findARindv(@PathVariable Integer ProjectId, @PathVariable Integer AlgorithmId) {
+        Project project = projectService.find(ProjectId);
+        if (project.getId() == ProjectId) {
+            Double rgrp = rgrpService.getRgrp(ProjectId, AlgorithmId);
+            return rgrp;
+        }
+        return 0.0;
     }
 
 }

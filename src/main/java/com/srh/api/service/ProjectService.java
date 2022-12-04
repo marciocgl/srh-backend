@@ -23,6 +23,7 @@ public class ProjectService {
     private AdminService adminService;
 
     public Project find(Integer id) {
+        System.out.println(id);
         Optional<Project> project = projectRepository.findById(id);
 
         if (project.isPresent())

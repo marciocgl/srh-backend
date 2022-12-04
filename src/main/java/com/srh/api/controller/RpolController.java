@@ -1,4 +1,5 @@
 package com.srh.api.controller;
+
 import com.srh.api.dto.resource.ProjectDto;
 import com.srh.api.hypermedia.ProjectModelAssembler;
 import com.srh.api.model.Project;
@@ -19,29 +20,14 @@ public class RpolController {
     @Autowired
     private ProjectService projectService;
 
-    @Autowired
-    private ProjectModelAssembler projectModelAssembler;
-
-    @Autowired
-    private PagedResourcesAssembler<ProjectDto> pagedResourcesAssembler;
-
-    @GetMapping
-    public ArrayList<Double> getRpol(Integer id) {
-        ArrayList<Double> rpol = rpolService.getRpol(id);
-        return rpol;
-    }
-
-
-    @GetMapping("/{id}")
-    public Integer find(@PathVariable Integer id) {
-        Project project = projectService.find(id);
-        return project.getId();
-    }
-
-    @GetMapping("/{id}/{id}")
-    public Double findADouble(@PathVariable Integer id) {
-        ArrayList<Double> rpol = rpolService.getRpol(id);
-        return rpol.get(id-1) ;
+    @GetMapping("/{ProjectId}/{AlgorithmId}")
+    public Double findARpol(@PathVariable Integer ProjectId, @PathVariable Integer AlgorithmId) {
+        Project project = projectService.find(ProjectId);
+        if (project.getId() == ProjectId) {
+            Double rpol = rpolService.getRpol(ProjectId, AlgorithmId);
+            return rpol;
+        }
+        return 0.0;
     }
 
 }
