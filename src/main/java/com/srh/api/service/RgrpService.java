@@ -44,8 +44,10 @@ public class RgrpService {
         int grp = 0;
         int qtdScores = 0;
 
-        Iterable<Recommendation> lista1 = recommendationRepository.findAll();
-        Iterable<RecommendationRating> lista2 = recommendationRatingRepository.findAll();
+        Iterable<Recommendation> lista1 =
+                recommendationRepository.findAll();
+        Iterable<RecommendationRating> lista2 =
+                recommendationRatingRepository.findAll();
 
         ArrayList<Double> listaAlgoritmo4 = new ArrayList<>();
         for (Recommendation r : lista1) {
@@ -54,7 +56,8 @@ public class RgrpService {
                         r2.getAlgorithm().getId() == 2 &&
                         r.getEvaluator().getId() == r2.getEvaluator().getId() &&
                         r.getItem().getId() == r2.getItem().getId()) {
-                    if (r.getWeight().doubleValue() < r2.getWeight().doubleValue()) {
+                    if (r.getWeight().doubleValue()
+                            < r2.getWeight().doubleValue()) {
                         listaAlgoritmo4.add(r.getWeight());
                     } else {
                         listaAlgoritmo4.add(r2.getWeight());
@@ -69,8 +72,10 @@ public class RgrpService {
                     if (irr.getId() == x + 1 &&
                             xComparacao < 2 &&
                             qtdScores < listaAlgoritmo4.size()) {
-                        totalItem = totalItem + (listaAlgoritmo4.get(x) + irr.getScore());
-                        auxli = auxli + Math.pow(listaAlgoritmo4.get(x) - irr.getScore(), 2);
+                        totalItem = totalItem + (listaAlgoritmo4.get(x)
+                                + irr.getScore());
+                        auxli = auxli + Math.pow(listaAlgoritmo4.get(x)
+                                - irr.getScore(), 2);
                         xComparacao++;
                         qtdScores++;
                     }

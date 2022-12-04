@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 
-import static com.srh.api.dto.resource.ProjectDto.convert;
-
 @RestController
 @RequestMapping("/rindvs")
 public class RindvController {

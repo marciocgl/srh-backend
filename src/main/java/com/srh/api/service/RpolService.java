@@ -47,8 +47,10 @@ public class RpolService {
 
         ArrayList<Double> sublista = null;
 
-        Iterable<ItemRating> lista1 = itemRatingRepository.findAll();
-        Iterable<Recommendation> lista2 = recommendationRepository.findAll();
+        Iterable<ItemRating> lista1 =
+                itemRatingRepository.findAll();
+        Iterable<Recommendation> lista2 =
+                recommendationRepository.findAll();
         Iterable<Item> itens = itemRepository.findAll();
 
         if (AlgorithmId == 4) {
@@ -77,7 +79,8 @@ public class RpolService {
                 double menor = 0;
                 for (int x = 0; x < listaAlgoritmo1.size(); x++) {
                     if (a4 == true) {
-                        if (listaAlgoritmo1.get(x).doubleValue() < listaAlgoritmo2.get(x).doubleValue()) {
+                        if (listaAlgoritmo1.get(x).doubleValue() <
+                                listaAlgoritmo2.get(x).doubleValue()) {
                             menor = listaAlgoritmo1.get(x);
                             sublista.add(menor);
                         } else {
@@ -172,7 +175,6 @@ public class RpolService {
         a1 = false;
         a2 = false;
         a4 = false;
-        //auxRpol = 0;
         varItem.clear();
         totalItem = 0;
         totalVar = 0;
