@@ -30,6 +30,7 @@ O principal intuito do sistema é oferecer um serviço de recomendação genéri
 - Filtragem Colaborativa
 - Filtragem Baseada em Conteúdo
 - Filtragem Híbrida (Ponderada e Mista)
+- Filtragem Híbrida (Combinação Sequencial)
 
 Com os dados devidamente cadastrados (mostrados nos tópicos abaixo), é possível realizar o processo de recomendação passando os seguintes parâmetros:
 
@@ -49,7 +50,7 @@ O sistema prove algumas formas para geração da recomendação. Essas abordagen
 
 As requisições da API estão documentadas no Postman para consulta, elas podem ser encontradas no seguinte link:
 
-[Documentação da API](https://documenter.getpostman.com/view/6420672/T1LVA4ST)
+[Documentação da API](https://documenter.getpostman.com/view/16559558/2s8YzMXkQb)
 
 ### Diagrama de classes
 
@@ -68,7 +69,7 @@ Para utilização do sistema é necessário possuir o ambiente de desenvolviment
 Para uso do sistema basta clonar esse repositório com o seguinte comando:
 
 ```bash
-git clone git@github.com:herikLorencao/srh-backend.git
+git clone git@github.com:CaioFViana/srh-backend.git
 ```
 
 Além disso, é necessário a criação de um base de dados no banco com o nome **srh** para o registro dos dados do sistema.
@@ -112,3 +113,7 @@ abaixo pode ser usados para geração do token:
   "password": "123456"
 }
 ```
+
+#### Dados de acesso as medidas de justiça social
+
+Para o funcionamento do algoritmo das medidas de justiça social (Polarização, Justiça Individual, e Justiça do grupo). Primeiramente é necessário que as recomendações 3, e 5 sejam geradas via Postman. Assim, o sistema cria as recomendações de todos os algoritmos. O sistema 3, é responsável por gerar as recomendações 1, 2, e 3. O sistema 4, captura as recomendações do algoritmo 1 e do algoritmo 2 quando ambas estão criadas, e o algoritmo 5, retorna as recomendações apenas do 5. Feito isso, é necessário realizar as inserções das avaliações na classe “RecommendationRating”, que podem ser feitas via H2. O bloco com as inserções (“INSERT RECOMMENDATION_RATING”) já está criado, então basta copia-lo e cola-lo dentro do H2. Com todos os passos realizados, é possível visualizar as medidas de justiça social usando o parâmetro do projeto, e do algoritmo, por exemplo, rpols/1/1, será mostrado a polarização do projeto 1, algoritmo 1, rindvs/1/1, será mostrado a justiça individual do projeto 1, e do algoritmo 1, e rgrps/1/1, será mostrado a medida de justiça do grupo do projeto 1, do algoritmo 1, e assim serve para todos os algoritmos existentes no projeto.
