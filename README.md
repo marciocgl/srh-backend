@@ -50,7 +50,7 @@ O sistema prove algumas formas para geração da recomendação. Essas abordagen
 
 As requisições da API estão documentadas no Postman para consulta, elas podem ser encontradas no seguinte link:
 
-[Documentação da API](https://documenter.getpostman.com/view/6420672/T1LVA4ST)
+[Documentação da API](https://martian-crater-123558.postman.co/workspace/28e2546d-baf1-4036-84f4-f6ed05b8ee4a/collection/16559558-23506f9c-d410-4ae3-8233-d5c2920bfb84?action=share&creator=16559558)
 
 ### Diagrama de classes
 
