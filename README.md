@@ -30,6 +30,7 @@ O principal intuito do sistema é oferecer um serviço de recomendação genéri
 - Filtragem Colaborativa
 - Filtragem Baseada em Conteúdo
 - Filtragem Híbrida (Ponderada e Mista)
+- Filtragem Híbrida (Combinação Sequencial)
 
 Com os dados devidamente cadastrados (mostrados nos tópicos abaixo), é possível realizar o processo de recomendação passando os seguintes parâmetros:
 
@@ -68,7 +69,7 @@ Para utilização do sistema é necessário possuir o ambiente de desenvolviment
 Para uso do sistema basta clonar esse repositório com o seguinte comando:
 
 ```bash
-git clone git@github.com:herikLorencao/srh-backend.git
+git clone git@github.com:CaioFViana/srh-backend.git
 ```
 
 Além disso, é necessário a criação de um base de dados no banco com o nome **srh** para o registro dos dados do sistema.
@@ -112,3 +113,5 @@ abaixo pode ser usados para geração do token:
   "password": "123456"
 }
 ```
+
+#### Dados de acesso as medidas de justiça social
